@@ -57,7 +57,7 @@ exports.handler = async (event) => {
       });
     }
 
-    return reply(200, { data });
+    return reply(200, data);
   } catch (error) {
     return reply(502, {
       error: "Gagal menghubungi layanan Alkitab."
