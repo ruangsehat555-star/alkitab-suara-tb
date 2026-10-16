@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#173c35">
+<meta name="description" content="Aplikasi Alkitab Terjemahan Baru dengan pencarian ayat melalui suara.">
+<title>Alkitab Suara TB</title>
+<style>
+:root{--green:#173c35;--green2:#24594d;--cream:#f6f4ec;--gold:#d5ad61;--ink:#1e2b27;--muted:#68746f;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:linear-gradient(135deg,var(--green),var(--green2));color:white;padding:28px 20px 30px;border-radius:0 0 26px 26px}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;border-radius:16px;background:#ffffff1c;display:grid;place-items:center;font-size:25px;border:1px solid #ffffff35}
+h1{font-size:23px;line-height:1.15;margin:0}.subtitle{font-size:13px;color:#dbe7df;margin-top:5px}
+main{max-width:680px;margin:0 auto;padding:18px 15px 36px}.panel{background:white;border-radius:20px;padding:18px;box-shadow:0 8px 26px #193c3510;margin-bottom:15px}
+.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--green2);font-weight:800;margin-bottom:8px}
+p{line-height:1.55}.hint{font-size:13px;color:var(--muted);margin:8px 0 0}
+.searchrow{display:flex;gap:8px;margin-top:12px}input{width:100%;min-width:0;border:1px solid #d9e0dc;border-radius:13px;padding:14px 13px;font:inherit;font-size:16px;background:#fcfdfb;color:var(--ink)}
+button{border:0;border-radius:13px;padding:13px 15px;font:inherit;font-weight:700;cursor:pointer;touch-action:manipulation}
+.primary{background:var(--green);color:white}.mic{background:#f0e7d3;color:#59451e;min-width:58px;font-size:20px}.secondary{background:#edf3ef;color:var(--green);width:100%;margin-top:10px}
+button:disabled{opacity:.55;cursor:not-allowed}.status{font-size:13px;color:var(--muted);margin-top:10px;min-height:20px}
+.result{display:none}.result.show{display:block}.versehead{font-size:21px;font-weight:800;color:var(--green);margin:2px 0 12px}.versetext{font-family:Georgia,serif;font-size:19px;line-height:1.8;white-space:pre-wrap}.verse-number{color:#a77b2b;font-weight:800;margin-right:5px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.actions button{flex:1;min-width:130px}.small{font-size:12px;color:var(--muted);line-height:1.5}.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.chip{background:#f0f4f1;color:#2c574c;padding:9px 12px;border-radius:999px;font-size:13px}
+footer{text-align:center;font-size:12px;color:var(--muted);padding:6px 18px 25px}
+@media(min-width:520px){header{padding:34px max(22px,calc((100% - 640px)/2)) 36px}.searchrow{align-items:stretch}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo" aria-hidden="true">📖</div><div><h1>Alkitab Suara TB</h1><div class="subtitle">Cari ayat Alkitab dengan suara Anda</div></div></div>
+</header>
+<main>
+  <section class="panel">
+    <div class="eyebrow">Pencarian ayat</div>
+    <p style="margin:0">Tekan mikrofon dan ucapkan referensi, misalnya <b>“Yohanes pasal tiga ayat enam belas”</b>.</p>
+    <div class="searchrow">
+      <input id="query" type="text" autocomplete="off" placeholder="Contoh: Yohanes 3:16" aria-label="Referensi ayat Alkitab">
+      <button class="mic" id="mic" aria-label="Cari dengan suara" title="Cari dengan suara">🎙️</button>
+      <button class="primary" id="search">Cari</button>
+    </div>
+    <div id="status" class="status" role="status">Anda juga bisa mengetik referensi ayat.</div>
+    <div class="quick">
+      <button class="chip" data-ref="Yohanes 3:16">Yohanes 3:16</button>
+      <button class="chip" data-ref="Mazmur 23">Mazmur 23</button>
+      <button class="chip" data-ref="Kejadian 1:1">Kejadian 1:1</button>
+    </div>
+  </section>
+
+  <section class="panel result" id="result" aria-live="polite">
+    <div class="eyebrow">Hasil pencarian</div>
+    <div id="title" class="versehead"></div>
+    <div id="verses" class="versetext"></div>
+    <div class="actions">
+      <button class="secondary" id="copy">Salin referensi</button>
+      <button class="secondary" id="openSabda">Buka di Alkitab SABDA</button>
+    </div>
+    <p class="small" style="margin-bottom:0">Jika teks tidak muncul, buka sumber Alkitab online melalui tombol di atas. Koneksi internet diperlukan untuk mengambil teks.</p>
+  </section>
+
+  <section class="panel">
+    <div class="eyebrow">Cara menggunakan</div>
+    <p style="margin:0 0 8px">1. Tekan tombol 🎙️ dan izinkan akses mikrofon jika diminta.</p>
+    <p style="margin:0 0 8px">2. Ucapkan nama kitab, pasal, dan ayat dengan jelas.</p>
+    <p style="margin:0">3. Aplikasi akan langsung mencari ayat setelah Anda selesai berbicara. Tombol Cari tetap tersedia untuk pencarian manual.</p>
+    <p class="hint">Contoh: “Roma delapan ayat dua puluh delapan” atau “Matius lima”.</p>
+  </section>
+  <section class="panel">
+    <div class="eyebrow">Catatan</div>
+    <p class="small" style="margin:0">Versi yang dituju adalah Terjemahan Baru (TB). Teks Alkitab TB memiliki hak cipta Lembaga Alkitab Indonesia. Versi awal ini tidak menyimpan seluruh teks TB; teks diambil dari layanan pihak ketiga jika tersedia. Aplikasi ini adalah prototipe gratis dan belum merupakan aplikasi resmi LAI.</p>
+  </section>
+</main>
+<footer>Alkitab Suara TB · Prototipe awal · Dibuat untuk penggunaan di HP</footer>
+<script>
+const $ = id => document.getElementById(id);
+let lastReference = '';
+const bookNames = [
+ ['Kejadian','Kejadian'],['Keluaran','Keluaran'],['Imamat','Imamat'],['Bilangan','Bilangan'],['Ulangan','Ulangan'],
+ ['Yosua','Yosua'],['Hakim-hakim','Hakim-hakim'],['Rut','Rut'],['1 Samuel','1 Samuel'],['2 Samuel','2 Samuel'],
+ ['1 Raja-raja','1 Raja-raja'],['2 Raja-raja','2 Raja-raja'],['1 Tawarikh','1 Tawarikh'],['2 Tawarikh','2 Tawarikh'],
+ ['Ezra','Ezra'],['Nehemia','Nehemia'],['Ester','Ester'],['Ayub','Ayub'],['Mazmur','Mazmur'],['Amsal','Amsal'],
+ ['Pengkhotbah','Pengkhotbah'],['Kidung Agung','Kidung Agung'],['Yesaya','Yesaya'],['Yeremia','Yeremia'],
+ ['Ratapan','Ratapan'],['Yehezkiel','Yehezkiel'],['Daniel','Daniel'],['Hosea','Hosea'],['Yoel','Yoel'],['Amos','Amos'],
+ ['Obaja','Obaja'],['Yunus','Yunus'],['Mikha','Mikha'],['Nahum','Nahum'],['Habakuk','Habakuk'],['Zefanya','Zefanya'],
+ ['Hagai','Hagai'],['Zakharia','Zakharia'],['Maleakhi','Maleakhi'],['Matius','Matius'],['Markus','Markus'],
+ ['Lukas','Lukas'],['Yohanes','Yohanes'],['Kisah Para Rasul','Kisah Para Rasul'],['Roma','Roma'],
+ ['1 Korintus','1 Korintus'],['2 Korintus','2 Korintus'],['Galatia','Galatia'],['Efesus','Efesus'],
+ ['Filipi','Filipi'],['Kolose','Kolose'],['1 Tesalonika','1 Tesalonika'],['2 Tesalonika','2 Tesalonika'],
+ ['1 Timotius','1 Timotius'],['2 Timotius','2 Timotius'],['Titus','Titus'],['Filemon','Filemon'],
+ ['Ibrani','Ibrani'],['Yakobus','Yakobus'],['1 Petrus','1 Petrus'],['2 Petrus','2 Petrus'],
+ ['1 Yohanes','1 Yohanes'],['2 Yohanes','2 Yohanes'],['3 Yohanes','3 Yohanes'],['Yudas','Yudas'],['Wahyu','Wahyu']
+];
+const numberWords = {nol:0,satu:1,dua:2,tiga:3,empat:4,lima:5,enam:6,tujuh:7,delapan:8,sembilan:9,sepuluh:10,
+ sebelas:11,'dua belas':12,'tiga belas':13,'empat belas':14,'lima belas':15,'enam belas':16,'tujuh belas':17,'delapan belas':18,'sembilan belas':19,
+ 'dua puluh':20,'tiga puluh':30,'empat puluh':40,'lima puluh':50,'enam puluh':60,'tujuh puluh':70,'delapan puluh':80,'sembilan puluh':90};
+function normalizeWords(s){
+ s=s.toLowerCase().replace(/[.,]/g,' ').replace(/\bpasal\b/g,' ').replace(/\bayat\b/g,':').replace(/\s+/g,' ').trim();
+ const tens = {'dua puluh':20,'tiga puluh':30,'empat puluh':40,'lima puluh':50,'enam puluh':60,'tujuh puluh':70,'delapan puluh':80,'sembilan puluh':90};
+ for(const [w,n] of Object.entries(tens)) s=s.replaceAll(w,String(n));
+ const nums={nol:0,satu:1,dua:2,tiga:3,empat:4,lima:5,enam:6,tujuh:7,delapan:8,sembilan:9,sepuluh:10,sebelas:11,'dua belas':12,'tiga belas':13,'empat belas':14,'lima belas':15,'enam belas':16,'tujuh belas':17,'delapan belas':18,'sembilan belas':19};
+ for(const [w,n] of Object.entries(nums)) s=s.replace(new RegExp('\\b'+w+'\\b','g'),String(n));
+ return s.replace(/\s*:\s*/g,':').replace(/\s+/g,' ').trim();
+}
+function parseReference(raw){
+ let s=normalizeWords(raw);
+ // Accept chapter-only and chapter:verse; preserve numbered books.
+ const bookPattern=bookNames.map(x=>x[0]).sort((a,b)=>b.length-a.length).map(x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|');
+ const m=s.match(new RegExp('^(' + bookPattern + ')\\s+(\\d+)(?::(\\d+)(?:-(\\d+))?)?$','i'));
+ if(!m) return null;
+ const book=bookNames.find(b=>b[0].toLowerCase()===m[1].toLowerCase());
+ return {book:book[1],chapter:Number(m[2]),verse:m[3]?Number(m[3]):null,endVerse:m[4]?Number(m[4]):null};
+}
+function setStatus(t){$('status').textContent=t}
+async function search(){
+ const raw=$('query').value.trim();
+ if(!raw){setStatus('Masukkan atau ucapkan referensi ayat terlebih dahulu.');return}
+ const ref=parseReference(raw);
+ if(!ref){setStatus('Referensi belum dikenali. Coba format “Yohanes 3:16” atau “Mazmur 23”.');return}
+ lastReference=`${ref.book} ${ref.chapter}${ref.verse?':'+ref.verse+(ref.endVerse?'-'+ref.endVerse:''):''}`;
+ $('result').classList.add('show');
+ $('title').textContent=lastReference;
+ $('verses').textContent='Sedang mengambil teks Alkitab…';
+ setStatus('Mencari '+lastReference+'…');
+ try{
+   const params=new URLSearchParams({book:ref.book,chapter:String(ref.chapter)});
+   if(ref.verse) params.set('verse',String(ref.verse));
+   if(ref.endVerse) params.set('endVerse',String(ref.endVerse));
+   const res=await fetch('/.netlify/functions/verse?'+params.toString());
+   const payload=await res.json();
+   if(!res.ok) throw new Error(payload.error||'Layanan teks tidak tersedia');
+   const data=payload.data;
+   if(data && data.text){
+     $('title').textContent=`${data.book?.name||ref.book} ${data.chapter||ref.chapter}:${data.verse_number||ref.verse}`;
+     $('verses').innerHTML=`<div><span class="verse-number">${data.verse_number||ref.verse||''}</span>${escapeHTML(data.text)}</div>`;
+   }else if(data && Array.isArray(data.verses)){
+     $('title').textContent=`${data.book?.name||ref.book} ${data.chapter||ref.chapter}`;
+     $('verses').innerHTML=data.verses.filter(v=>!ref.verse||(v.verse_number>=ref.verse&&v.verse_number<=(ref.endVerse||ref.verse))).map(v=>`<div><span class="verse-number">${v.verse_number}</span>${escapeHTML(v.text||'')}</div>`).join('');
+   }else throw new Error('Format teks dari API tidak dikenali');
+   setStatus('Ayat berhasil dimuat.');
+ }catch(e){
+   $('verses').textContent='Teks ayat belum berhasil dimuat. Periksa konfigurasi API dan fungsi server Netlify.';
+   setStatus(e.message||'Sumber teks tidak tersedia.');
+ }
+}
+function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('search').addEventListener('click',search);
+$('query').addEventListener('keydown',e=>{if(e.key==='Enter')search()});
+document.querySelectorAll('[data-ref]').forEach(b=>b.addEventListener('click',()=>{$('query').value=b.dataset.ref;search()}));
+$('copy').addEventListener('click',async()=>{if(!lastReference)return;try{await navigator.clipboard.writeText(lastReference);setStatus('Referensi disalin: '+lastReference)}catch(e){$('query').select();setStatus('Pilih dan salin referensi dari kolom pencarian.')}});
+$('openSabda').addEventListener('click',()=>{if(!lastReference)return;window.open('https://alkitab.sabda.org/passage.php?passage='+encodeURIComponent(lastReference)+'&tab=text','_blank','noopener')});
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+$('mic').addEventListener('click',()=>{
+ setStatus('Memeriksa fitur suara…');
+ if(!SpeechRecognition){setStatus('Pengenalan suara tidak didukung di browser ini. Coba buka situs lewat Google Chrome Android dan gunakan HTTPS.');return}
+ const rec=new SpeechRecognition();rec.lang='id-ID';rec.interimResults=false;rec.maxAlternatives=1;
+ $('mic').disabled=true;setStatus('Silakan berbicara…');
+ rec.onresult=e=>{
+  const heard=e.results[0][0].transcript;
+  $('query').value=heard;
+  setStatus('Terdengar: “'+heard+'”. Mencari ayat secara otomatis…');
+  // Automatically search as soon as speech recognition returns a result.
+  setTimeout(()=>search(),250);
+ };
+ rec.onerror=e=>setStatus(e.error==='not-allowed'?'Izin mikrofon ditolak. Aktifkan izin mikrofon untuk situs ini.':'Suara belum tertangkap. Coba lagi atau ketik referensinya.');
+ rec.onend=()=>{$('mic').disabled=false};
+ try{rec.start()}catch(e){$('mic').disabled=false;setStatus('Tidak dapat memulai mikrofon. Coba muat ulang halaman.')}
+});
+</script>
+</body>
+</html>
