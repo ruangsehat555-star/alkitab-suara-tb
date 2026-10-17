@@ -92,7 +92,7 @@ const numberWords = {nol:0,satu:1,dua:2,tiga:3,empat:4,lima:5,enam:6,tujuh:7,del
  sebelas:11,'dua belas':12,'tiga belas':13,'empat belas':14,'lima belas':15,'enam belas':16,'tujuh belas':17,'delapan belas':18,'sembilan belas':19,
  'dua puluh':20,'tiga puluh':30,'empat puluh':40,'lima puluh':50,'enam puluh':60,'tujuh puluh':70,'delapan puluh':80,'sembilan puluh':90};
 function normalizeWords(s){
- s=s.toLowerCase().replace(/[.,]/g,' ').replace(/\bpasal\b/g,' ').replace(/\bayat\b/g,':').replace(/\s+/g,' ').trim();
+ s=s.toLowerCase().replace(/[.,]/g,' ').replace(/\bpasal\b/g,' ').replace(/\bayat\b/g,':').replace(/\bsampai\b/g,'-').replace(/\s+/g,' ').trim();
  const tens = {'dua puluh':20,'tiga puluh':30,'empat puluh':40,'lima puluh':50,'enam puluh':60,'tujuh puluh':70,'delapan puluh':80,'sembilan puluh':90};
  for(const [w,n] of Object.entries(tens)) s=s.replaceAll(w,String(n));
  const nums={nol:0,satu:1,dua:2,tiga:3,empat:4,lima:5,enam:6,tujuh:7,delapan:8,sembilan:9,sepuluh:10,sebelas:11,'dua belas':12,'tiga belas':13,'empat belas':14,'lima belas':15,'enam belas':16,'tujuh belas':17,'delapan belas':18,'sembilan belas':19};
